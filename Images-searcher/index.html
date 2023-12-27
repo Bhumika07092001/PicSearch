@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Gallery</title>
+  <style>
+    #image-container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .image-item {
+      margin: 10px;
+    }
+
+    .image-item img {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Image Gallery</h1>
+  <button id="button" onclick="grab_data()">Click</button>
+
+  <div id="image-container">
+    <img id="image">
+  </div>
+
+  <script>
+    function httpGetAsync(theUrl, callback)
+{
+    // create the request object
+    var xmlHttp = new XMLHttpRequest();
+
+    // set the state change callback to capture when the response comes in
+    xmlHttp.onreadystatechange = function()
+    {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+        {
+            callback(xmlHttp.responseText);
+        }
+    }
+
+    // open as a GET call, pass in the url and set async = True
+    xmlHttp.open("GET", theUrl, true);
+
+    // call send with no params as they were passed in on the url string
+    xmlHttp.send(null);
+
+    return;
+}
+
+// callback for the top 8 GIFs of search
+function tenorCallback_search(responsetext)
+{
+    // Parse the JSON response
+    var response_objects = JSON.parse(responsetext);
+
+    top_10_gifs = response_objects["hits"];
+
+    //Here we get the gif url
+    console.log(top_10_gifs[0]);
+
+    // load the GIFs -- for our example we will load the first GIFs preview size (nanogif) and share size (gif)
+
+    document.getElementById("image").src = top_10_gifs[9]["media_formats"]["nanogif"]["url"];
+
+    return;
+}
+
+
+    function grab_data()
+{
+    // set the apikey and limit
+    var apikey ="41111740-3b1270a3261e1b1ac10767943"; //test key
+    var clientkey = "heatic-test-app"; //test client key
+    var lmt = 10;
+
+    // test search term
+    var search_term = "car";
+
+    // using default locale of en_US
+    var search_url = "https://pixabay.com/api/?key="+apiKey+"&q="+search_term+"&image_type=photo";
+            
+
+    console.log('Search URL: ' + search_url);            
+
+    httpGetAsync(search_url,tenorCallback_search);
+
+    // data will be loaded by each call's callback
+    return;
+}
+  </script>
+
+</body>
+</html>
